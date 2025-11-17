@@ -124,45 +124,9 @@ Frontend has a build step in CI — you can also run lint/tests locally accordin
 - CI workflow: `.github/workflows/ci.yml` — runs on pull requests to `main` and pushes to `main`. It checks backend tests and builds the frontend.
 - Deploy workflow: `.github/workflows/deploy.yml` — triggered on push to `main`. It uses an SSH key (stored as `SSH_PRIVATE_KEY`) to rsync the repository to a remote server and (optionally) run `php artisan migrate --force` when `RUN_MIGRATIONS` secret is set to `true`.
 
-### Required GitHub repository secrets
-Set these under Settings → Secrets → Actions for the deploy workflow to work:
-
-- `SSH_PRIVATE_KEY` — private SSH key used by the deploy job (the corresponding public key must be added to the remote server's `~/.ssh/authorized_keys`).
-- `SSH_HOST` — remote server host (IP or domain)
-- `SSH_USER` — SSH username
-- `SSH_PORT` — optional (default 22)
-- `DEPLOY_PATH` — remote path where the project should be deployed (e.g., `/var/www/lms-demo`)
-- Optionally `RUN_MIGRATIONS` — set to `'true'` to run `php artisan migrate --force` after deploy
-
-Do not store private keys in the repo. Use GitHub Secrets for all sensitive values.
-
 ## Deployment
 The provided `deploy.yml` uses rsync over SSH to mirror the repo to your server. Ensure the target directory is writable and the SSH key has access.
 
 If you prefer other deployment methods (Docker Compose on the host, Docker Swarm, Kubernetes), adjust the workflow accordingly.
 
-## Branch protection & PR workflow
-To require pull requests and code review before changes reach `main`, configure branch protection in the GitHub repository Settings → Branches. Recommended settings:
-
-- Require pull request reviews before merging (1 or more reviewers)
-- Require status checks to pass before merging (select the CI job(s) from the Actions tab)
-- Dismiss stale pull request approvals when new commits are pushed
-
-This repository includes a `PULL_REQUEST_TEMPLATE.md` to guide contributors.
-
-## Contributing
-Please follow the checklist in `PULL_REQUEST_TEMPLATE.md` when opening a PR. Consider adding a `CONTRIBUTING.md` file if you want more detailed contributor guidelines.
-
-## License
-Add a license file to this repository (e.g., `LICENSE` with MIT or another license) if you plan to share this code publicly.
-
----
-
-If you'd like, I can also:
-
-- Add a `CONTRIBUTING.md` and `LICENSE` file and push them to the repo.
-- Enable branch protection rules via the GitHub API (I will need a token with `repo`/`admin:repo_hook` scopes).
-- Walk your friend through the PR workflow, or create templates for issues and PRs.
-
-Tell me what you want next and I'll take care of it.
 
