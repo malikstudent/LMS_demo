@@ -119,5 +119,3 @@ coverage/
 # Test Coverage
 coverage/
 .nyc_output/
-phpunit.xml
-.phpunit.result.cache
