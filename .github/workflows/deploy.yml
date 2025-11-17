@@ -1,0 +1,46 @@
+name: Deploy to server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Rsync files to server
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          SSH_OPTS="-o StrictHostKeyChecking=no"
+          if [ -z "$SSH_PORT" ]; then
+            SSH_PORT=22
+          fi
+          echo "Deploying to $SSH_USER@$SSH_HOST:$DEPLOY_PATH"
+          rsync -az --delete --exclude='.git' -e "ssh -p $SSH_PORT $SSH_OPTS" ./ $SSH_USER@$SSH_HOST:$DEPLOY_PATH
+
+      - name: Run remote artisan migrate (optional)
+        if: ${{ secrets.RUN_MIGRATIONS == 'true' }}
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          if [ -z "$SSH_PORT" ]; then
+            SSH_PORT=22
+          fi
+          ssh -p $SSH_PORT -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd $DEPLOY_PATH/backend && php artisan migrate --force"
+

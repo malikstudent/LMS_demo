@@ -1,0 +1,13 @@
+database/factories/
+database/seeders/
+routes/
+storage/app/
+storage/framework/
+storage/logs/
+tests/
+bootstrap/cache/
+bootstrap/app.php
+app/Http/Controllers/
+app/Models/
+app/Http/Middleware/
+config/

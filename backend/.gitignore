@@ -1,0 +1,9 @@
+composer.lock
+vendor/
+.env
+.env.local
+node_modules/
+storage/
+public/storage
+bootstrap/cache/
+.phpunit.result.cache
